@@ -1,3 +1,5 @@
+/// <reference = cypress>
+
 describe('XYZ Bank elements tests', () => {
   beforeEach(() => {
     cy.visit('https://www.globalsqa.com/angularJs-protractor/BankingProject/#/login')
@@ -6,8 +8,7 @@ describe('XYZ Bank elements tests', () => {
 
   it('should be able to depossit money', () => {
     cy.get('.borderM > :nth-child(1) > .btn').click()
-    cy.get('#userSelect').select('Hermoine Granger')
-    cy.get('form.ng-valid > .btn').click()
+    cy.login('Hermoine Granger')
     cy.get('[ng-class="btnClass2"]').click()
     cy.get('.form-control').click().type('1000')
     cy.get('form.ng-dirty > .btn').click()
@@ -16,36 +17,28 @@ describe('XYZ Bank elements tests', () => {
 
   it('should be able to withdraw money', () => {
     cy.get('.borderM > :nth-child(1) > .btn').click()
-    cy.get('#userSelect').select('Hermoine Granger')
-    cy.get('form.ng-valid > .btn').click()
-    cy.get('[ng-class="btnClass3"]').click()
-    cy.get('.form-control').click().type('1000')
-    cy.get('form.ng-dirty > .btn').click()
+    cy.login('Hermoine Granger')
+    withdrawMoney('1000')
     cy.get('.error').should('have.text', 'Transaction successful')
   })
 
   it('should be able to view transactions', () => {
     cy.get('.borderM > :nth-child(1) > .btn').click()
-    cy.get('#userSelect').select('Hermoine Granger')
-    cy.get('form.ng-valid > .btn').click()
+    cy.login('Hermoine Granger')
     cy.get('[ng-class="btnClass1"]').click()
     cy.get('.table').should('be.visible')
   })
 
   it("should'nt be able to withdraw more money than the account has", () => {
     cy.get('.borderM > :nth-child(1) > .btn').click()
-    cy.get('#userSelect').select('Hermoine Granger')
-    cy.get('form.ng-valid > .btn').click()
-    cy.get('[ng-class="btnClass3"]').click()
-    cy.get('.form-control').click().type('1000000')
-    cy.get('form.ng-dirty > .btn').click()
+    cy.login('Hermoine Granger')
+    withdrawMoney('10000')
     cy.get('.error').should('have.text', 'Transaction Failed. You can not withdraw amount more than the balance.')
   })
 
   it('should be able to logout', () => {
     cy.get('.borderM > :nth-child(1) > .btn').click()
-    cy.get('#userSelect').select('Hermoine Granger')
-    cy.get('form.ng-valid > .btn').click()
+    cy.login('Hermoine Granger')
     cy.get('#userSelect').not('be.visible')
     cy.get('.logout').click()
     cy.get('#userSelect').should('be.visible')
@@ -65,3 +58,9 @@ describe('XYZ Bank elements tests', () => {
     cy.get('.fontBig').should('have.text', 'Rubeus Hagrid')
   })
 })
+
+function withdrawMoney(amount) {
+  cy.get('[ng-class="btnClass3"]').click()
+  cy.get('.form-control').click().type(amount)
+  cy.get('form.ng-dirty > .btn').click()
+}
